@@ -9,9 +9,10 @@ import {
   RadarIcon,
   RefreshCwIcon,
 } from "./ui/customIcons/icons";
+import { useParams } from "react-router-dom";
 
 export default function FlightDetails() {
-  //   const { flightNumber } = useParams<{ flightNumber: string }>();
+    const { flightNumber } = useParams<{ flightNumber: string }>();
 
   return (
     <div className="m-5">
@@ -20,7 +21,7 @@ export default function FlightDetails() {
           <div className="flex flex-col md:flex-row items-center justify-between p-5 rounded-md shadow-sm bg-blue-500 text-white">
             <div className="flex items-center gap-4 mb-4 md:mb-0">
               <div>
-                <div className="text-xl font-semibold">Flight #AB123</div>
+                <div className="text-xl font-semibold">Flight {flightNumber}</div>
                 <div className="md:text-left text-center">Acme Airlines</div>
               </div>
             </div>
