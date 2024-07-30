@@ -7,6 +7,11 @@ import { DoorOpen } from "lucide-react";
 import { Clock } from "lucide-react";
 import { Check } from "lucide-react";
 import { ArrowRight } from "lucide-react";
+import { RefreshCw } from "lucide-react";
+
+const RefreshCwIcon = () => {
+  return <RefreshCw />;
+};
 
 const ArrowRightIcon = () => {
   return <ArrowRight className="text-muted-foreground" />;
@@ -17,11 +22,11 @@ const CheckIcon = () => {
 };
 
 const BellIcon = () => {
-  return <Bell className="text-muted-foreground"/>;
+  return <Bell className="text-muted-foreground size-5" color="white"/>;
 };
 
 const PlaneIcon = () => {
-  return <Plane />;
+  return <Plane className="size-8 md:size-6"/>;
 };
 
 const RadarIcon = () => {
@@ -33,7 +38,7 @@ const LuggageIcon = () => {
 };
 
 const InfoIcon = () => {
-  return <Info />;
+  return <Info size={20}/>;
 };
 
 const DoorOpenIcon = () => {
@@ -54,4 +59,5 @@ export {
   LuggageIcon,
   CheckIcon,
   ArrowRightIcon,
+  RefreshCwIcon,
 };
