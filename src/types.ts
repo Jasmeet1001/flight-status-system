@@ -13,3 +13,12 @@ export type Notification = {
   message: string;
   timestamp: string;
 };
+
+export interface SearchField {
+  flightSearch: string;
+}
+
+export interface HeaderProps {
+  flightSearch: string;
+  onSearchChange: (value: string) => void;
+}
