@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState, useMemo, ChangeEvent } from "react";
-import { Input } from "@/components/ui/input";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -12,10 +11,11 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
-import { Flight } from "@/types";
-import { BellIcon, PlaneIcon } from "./ui/customIcons/icons";
+import { Flight, SearchField } from "@/types";
+import { BellIcon } from "./ui/customIcons/icons";
+import { Separator } from "./ui/separator";
 
-export default function StatusTable({flightSearch}) {
+export default function StatusTable({ flightSearch }: SearchField) {
   const [sortColumn, setSortColumn] = useState("flightNumber");
   const [sortDirection, setSortDirection] = useState("asc");
   const [flights, setFlights] = useState([
@@ -97,6 +97,9 @@ export default function StatusTable({flightSearch}) {
   }, [flights, sortColumn, sortDirection]);
 
   const filteredFlights = useMemo(() => {
+    if (flightSearch.trim() === "") {
+      return sortedFlights;
+    }
     return sortedFlights.filter((flight) => {
       return (
         flight.flightNumber
@@ -110,159 +113,147 @@ export default function StatusTable({flightSearch}) {
     });
   }, [sortedFlights, flightSearch]);
   return (
-    <div className="flex flex-col min-h-screen md:w-full">
-      <main className="flex-1 bg-background p-6">
-        <div className="mb-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("flightNumber")}
-                >
-                  Flight Number
-                  {sortColumn === "flightNumber" && (
-                    <span className="ml-2">
-                      {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
-                    </span>
-                  )}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("departureAirport")}
-                >
-                  Departure
-                  {sortColumn === "departureAirport" && (
-                    <span className="ml-2">
-                      {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
-                    </span>
-                  )}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("arrivalAirport")}
-                >
-                  Arrival
-                  {sortColumn === "arrivalAirport" && (
-                    <span className="ml-2">
-                      {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
-                    </span>
-                  )}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("departureTime")}
-                >
-                  Departure Time
-                  {sortColumn === "departureTime" && (
-                    <span className="ml-2">
-                      {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
-                    </span>
-                  )}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("arrivalTime")}
-                >
-                  Arrival Time
-                  {sortColumn === "arrivalTime" && (
-                    <span className="ml-2">
-                      {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
-                    </span>
-                  )}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("gate")}
-                >
-                  Gate
-                  {sortColumn === "gate" && (
-                    <span className="ml-2">
-                      {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
-                    </span>
-                  )}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort("status")}
-                >
-                  Status
-                  {sortColumn === "status" && (
-                    <span className="ml-2">
-                      {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
-                    </span>
-                  )}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredFlights.map((flight, index) => (
-                <TableRow key={index}>
+    <>
+      <div className="mb-6">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("flightNumber")}
+              >
+                Flight Number
+                {sortColumn === "flightNumber" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("departureAirport")}
+              >
+                Departure
+                {sortColumn === "departureAirport" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("arrivalAirport")}
+              >
+                Arrival
+                {sortColumn === "arrivalAirport" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("departureTime")}
+              >
+                Departure Time
+                {sortColumn === "departureTime" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("arrivalTime")}
+              >
+                Arrival Time
+                {sortColumn === "arrivalTime" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("gate")}
+              >
+                Gate
+                {sortColumn === "gate" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("status")}
+              >
+                Status
+                {sortColumn === "status" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredFlights.map((flight, index) => (
+              <TableRow key={index}>
+                <TableCell>
                   <Link to={`/flight/${flight.flightNumber}`}>
-                    <TableCell>{flight.flightNumber}</TableCell>
+                    {flight.flightNumber}
                   </Link>
-                  <TableCell>{flight.departureAirport}</TableCell>
-                  <TableCell>{flight.arrivalAirport}</TableCell>
-                  <TableCell>{flight.departureTime}</TableCell>
-                  <TableCell>{flight.arrivalTime}</TableCell>
-                  <TableCell>{flight.gate}</TableCell>
-                  <TableCell>
-                    <div
-                      className={`px-2 py-1 rounded-md text-sm font-medium ${
-                        flight.status === "On Time"
-                          ? "bg-green-100 text-green-600"
-                          : flight.status === "Delayed"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : flight.status === "Boarding"
-                          ? "bg-blue-100 text-blue-600"
-                          : "bg-red-100 text-red-600"
-                      }`}
-                    >
-                      {flight.status}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="bg-muted rounded-md p-4">
-          <h2 className="text-lg font-bold mb-4">Notifications</h2>
-          <div className="space-y-4">
-            {notifications.map((notification) => (
-              <div key={notification.id} className="flex items-start gap-4">
-                <div className="bg-primary rounded-full w-8 h-8 flex items-center justify-center text-primary-foreground">
-                  <BellIcon />
-                </div>
-                <div>
-                  <p className="font-medium">{notification.message}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {notification.timestamp}
-                  </p>
-                </div>
-              </div>
+                </TableCell>
+                <TableCell>{flight.departureAirport}</TableCell>
+                <TableCell>{flight.arrivalAirport}</TableCell>
+                <TableCell>{flight.departureTime}</TableCell>
+                <TableCell>{flight.arrivalTime}</TableCell>
+                <TableCell>{flight.gate}</TableCell>
+                <TableCell>
+                  <div
+                    className={`px-2 py-1 rounded-md text-sm font-medium ${
+                      flight.status === "On Time"
+                        ? "bg-green-100 text-green-600"
+                        : flight.status === "Delayed"
+                        ? "bg-yellow-100 text-yellow-600"
+                        : flight.status === "Boarding"
+                        ? "bg-blue-100 text-blue-600"
+                        : "bg-red-100 text-red-600"
+                    }`}
+                  >
+                    {flight.status}
+                  </div>
+                </TableCell>
+              </TableRow>
             ))}
+          </TableBody>
+        </Table>
+      </div>
+      <Separator />
+      <div className="border rounded-lg mt-12">
+        <div className="bg-muted text-black p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="font-semibold text-lg">Notifications</div>
           </div>
         </div>
-      </main>
-      <footer className="bg-primary text-primary-foreground py-4 px-6">
-        <div className="flex items-center justify-between">
-          <p className="text-sm">
-            &copy; 2023 XYZ Airlines. All rights reserved.
-          </p>
-          <nav className="flex items-center gap-4">
-            <Link to="#" className="text-sm hover:underline">
-              Privacy Policy
-            </Link>
-            <Link to="#" className="text-sm hover:underline">
-              Terms of Service
-            </Link>
-            <Link to="#" className="text-sm hover:underline">
-              Contact Us
-            </Link>
-          </nav>
+        <Separator />
+        <div className="space-y-5 overflow-y-scroll p-4">
+          {notifications.map((notification) => (
+            <div key={notification.id} className="flex items-start gap-4">
+              <div className="bg-yellow-400 rounded-full w-8 h-8 flex items-center justify-center text-primary-foreground">
+                <BellIcon />
+              </div>
+              <div>
+                <p className="font-medium">{notification.message}</p>
+                <p className="text-sm text-muted-foreground">
+                  {notification.timestamp}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
-      </footer>
-    </div>
+      </div>
+    </>
   );
 }
