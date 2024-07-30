@@ -14,7 +14,7 @@ const RefreshCwIcon = () => {
 };
 
 const ArrowRightIcon = () => {
-  return <ArrowRight className="text-muted-foreground" />;
+  return <ArrowRight />;
 };
 
 const CheckIcon = () => {
