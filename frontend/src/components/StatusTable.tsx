@@ -226,7 +226,7 @@ export default function StatusTable({ flightSearch }: SearchField) {
       </div>
       <Separator />
       <div className="rounded-lg mt-12">
-        <div className=" text-black p-4 flex items-center justify-between">
+        <div className=" text-black pb-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="font-semibold text-lg">Notifications</div>
           </div>

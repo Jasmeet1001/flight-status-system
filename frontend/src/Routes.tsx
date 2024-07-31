@@ -19,7 +19,7 @@ function AppRoutes() {
           flightSearch={flightSearch}
           onSearchChange={handleFlightSearch}
         />
-        <main className="flex-1 bg-background p-6">
+        <main className="flex-1 bg-background py-6 mx-10">
           <Routes>
             <Route
               path="/"
