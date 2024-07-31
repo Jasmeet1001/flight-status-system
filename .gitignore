@@ -25,3 +25,7 @@ dist-ssr
 
 #Python files
 flightenv
+flight-notification.json
+
+#env files
+.env
