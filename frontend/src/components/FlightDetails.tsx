@@ -23,25 +23,26 @@ export default function FlightDetails() {
     return locationCodes[loc] || loc;
   };
 
-  useEffect(() => {
+  const fetchFlight = async () => {
     if (!flightNumber) return;
 
-    // Function to fetch flights data from the backend
-    const fetchFlight = async () => {
-      if (!flightNumber) return;
-
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/api/flights?flight_id=${flightNumber}`
-        );
-        console.log("API Response Data:", response.data);
-        setFlightData(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching flights data:", error);
-      }
-    };
-
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/flights?flight_id=${flightNumber}`
+      );
+      console.log("API Response Data:", response.data);
+      setFlightData(response.data[0]);
+    } catch (error) {
+      console.error("Error fetching flights data:", error);
+    }
+  };
+  useEffect(() => {
     fetchFlight();
+
+    const intervalId = setInterval(fetchFlight, 10000);
+    
+    return () => clearInterval(intervalId);
+
   }, [flightNumber]);
 
   if (!flightData) {
@@ -89,6 +90,7 @@ export default function FlightDetails() {
                 variant="outline"
                 size="sm"
                 className="gap-2 text-black border-blue-50 hover:bg-blue-50 hover:text-blue-500"
+                onClick={() => fetchFlight()}
               >
                 <RefreshCwIcon />
                 Refresh
@@ -196,7 +198,8 @@ export default function FlightDetails() {
                 <div>
                   <div className="text-xl font-medium">Gate Information</div>
                   <div className="text-muted-foreground">
-                    Departure: Gate {flightData.departure_gate} | Arrival: Gate {flightData.arrival_gate}
+                    Departure: Gate {flightData.departure_gate} | Arrival: Gate{" "}
+                    {flightData.arrival_gate}
                   </div>
                 </div>
               </div>

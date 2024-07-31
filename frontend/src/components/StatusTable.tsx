@@ -24,32 +24,38 @@ export default function StatusTable({ flightSearch }: SearchField) {
   const [flights, setFlights] = useState([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  const fetchFlights = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/flights/");
+      setFlights(response.data);
+    } catch (error) {
+      console.error("Error fetching flights data:", error);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/notifications/"
+      );
+      setNotifications(response.data as Notification[]);
+    } catch (error) {
+      console.error("Error fetching notifications data:", error);
+    }
+  };
+  
   useEffect(() => {
-    // Function to fetch flights data from the backend
-    const fetchFlights = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/flights/");
-        setFlights(response.data);
-      } catch (error) {
-        console.error("Error fetching flights data:", error);
-      }
-    };
-
-    // Function to fetch notifications data from the backend
-    const fetchNotifications = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/notifications/"
-        );
-        setNotifications(response.data as Notification[]);
-      } catch (error) {
-        console.error("Error fetching notifications data:", error);
-      }
-    };
-
-    // Call the fetch functions
     fetchFlights();
     fetchNotifications();
+
+    const intervalFId = setInterval(fetchFlights, 30000);
+    const intervalNId = setInterval(fetchNotifications, 30000);
+    console.log("reloaded")
+    return () => {
+      clearInterval(intervalFId)
+      clearInterval(intervalNId)
+    };
+
   }, []);
 
   const handleSort = (column: SetStateAction<string>) => {
