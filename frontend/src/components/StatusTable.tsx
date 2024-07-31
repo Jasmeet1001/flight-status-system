@@ -9,6 +9,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
+  TableFooter,
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
 import { Flight, SearchField } from "@/types";
@@ -114,7 +115,7 @@ export default function StatusTable({ flightSearch }: SearchField) {
   }, [sortedFlights, flightSearch]);
   return (
     <>
-      <div className="mb-6">
+      <div className="mb-6 select-none">
         <Table>
           <TableHeader>
             <TableRow>
@@ -228,17 +229,20 @@ export default function StatusTable({ flightSearch }: SearchField) {
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+            Pagination Here
+          </TableFooter>
         </Table>
       </div>
       <Separator />
-      <div className="border rounded-lg mt-12">
-        <div className="bg-muted text-black p-4 flex items-center justify-between">
+      <div className="rounded-lg mt-12">
+        <div className=" text-black p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="font-semibold text-lg">Notifications</div>
           </div>
         </div>
         <Separator />
-        <div className="space-y-5 overflow-y-scroll p-4">
+        <div className="space-y-5 overflow-y-auto p-4">
           {notifications.map((notification) => (
             <div key={notification.id} className="flex items-start gap-4">
               <div className="bg-yellow-400 rounded-full w-8 h-8 flex items-center justify-center text-primary-foreground">
