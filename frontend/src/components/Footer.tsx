@@ -5,7 +5,7 @@ export default function Footer() {
       <footer className="bg-primary text-primary-foreground py-4 px-6">
         <div className="flex items-center justify-between">
           <p className="text-sm">
-            &copy; 2023 XYZ Airlines. All rights reserved.
+            &copy; 2023 Indigo Airlines. All rights reserved.
           </p>
           <nav className="flex items-center gap-4">
             <Link to="#" className="text-sm hover:underline">

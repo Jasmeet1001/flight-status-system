@@ -10,9 +10,43 @@ import {
   RefreshCwIcon,
 } from "./ui/customIcons/icons";
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Flight } from "@/types";
+import { handleTime, locationCodes } from "@/utils/helper";
 
 export default function FlightDetails() {
-    const { flightNumber } = useParams<{ flightNumber: string }>();
+  const { flightNumber } = useParams<{ flightNumber: string }>();
+  const [flightData, setFlightData] = useState<Flight>();
+
+  const getlocAbbr = (loc: string) => {
+    return locationCodes[loc] || loc;
+  };
+
+  useEffect(() => {
+    if (!flightNumber) return;
+
+    // Function to fetch flights data from the backend
+    const fetchFlight = async () => {
+      if (!flightNumber) return;
+
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/flights?flight_id=${flightNumber}`
+        );
+        console.log("API Response Data:", response.data);
+        setFlightData(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching flights data:", error);
+      }
+    };
+
+    fetchFlight();
+  }, [flightNumber]);
+
+  if (!flightData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="m-5">
@@ -21,19 +55,28 @@ export default function FlightDetails() {
           <div className="flex flex-col md:flex-row items-center justify-between p-5 rounded-md shadow-sm bg-blue-500 text-white">
             <div className="flex items-center gap-4 mb-4 md:mb-0">
               <div>
-                <div className="text-xl font-semibold">Flight {flightNumber}</div>
-                <div className="md:text-left text-center">Acme Airlines</div>
+                <div className="text-xl font-semibold">
+                  Flight {flightNumber}
+                </div>
+                <div className="md:text-left text-center">
+                  {flightData.airline}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <div className="text-xl font-medium">SFO</div>
-                <div className="">San Francisco</div>
+                <div className="text-xl font-medium">
+                  {getlocAbbr(flightData.departure_location)}
+                </div>
+                <div className="">{flightData.departure_location}</div>
               </div>
               <ArrowRightIcon />
               <div className="text-left">
-                <div className="text-xl font-medium">JFK</div>
-                <div className="">New York</div>
+                <div className="text-xl font-medium">
+                  {" "}
+                  {getlocAbbr(flightData.arrival_location)}
+                </div>
+                <div className="">{flightData.arrival_location}</div>
               </div>
             </div>
           </div>
@@ -58,34 +101,45 @@ export default function FlightDetails() {
                   <div className="text-sm text-muted-foreground">
                     Flight Number
                   </div>
-                  <div className="font-medium">AA123</div>
+                  <div className="font-medium">{flightData.flight_id}</div>
                 </div>
                 <div className="grid gap-1">
                   <div className="text-sm text-muted-foreground">Airline</div>
-                  <div className="font-medium">American Airlines</div>
+                  <div className="font-medium">{flightData.airline}</div>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="grid gap-1">
                   <div className="text-sm text-muted-foreground">Departure</div>
                   <div className="font-medium">
-                    <div>SFO - San Francisco</div>
+                    <div>
+                      {getlocAbbr(flightData.departure_location)} -{" "}
+                      {flightData.departure_location}
+                    </div>
                     <div className="flex flex-col my-5">
-                      <span className="font-normal mt-2">Scheduled:</span> 10:30
-                      AM
-                      <span className="font-normal mt-2"> Actual:</span> 10:25
-                      AM
+                      <span className="font-normal mt-2">Scheduled:</span>{" "}
+                      {handleTime(flightData.scheduled_departure)}
+                      <span className="font-normal mt-2"> Actual:</span>{" "}
+                      {flightData.actual_departure
+                        ? handleTime(flightData.actual_departure)
+                        : "-"}
                     </div>
                   </div>
                 </div>
                 <div className="grid gap-1">
                   <div className="text-sm text-muted-foreground">Arrival</div>
                   <div className="font-medium">
-                    <div>JFK - New York</div>
+                    <div>
+                      {getlocAbbr(flightData.arrival_location)} -{" "}
+                      {flightData.arrival_location}
+                    </div>
                     <div className="flex flex-col my-5">
-                      <span className="font-normal mt-2">Scheduled:</span> 5:45
-                      PM
-                      <span className="font-normal mt-2"> Actual:</span> 5:40 PM
+                      <span className="font-normal mt-2">Scheduled:</span>{" "}
+                      {handleTime(flightData.scheduled_arrival)}
+                      <span className="font-normal mt-2"> Actual:</span>{" "}
+                      {flightData.actual_arrival
+                        ? handleTime(flightData.actual_arrival)
+                        : "-"}
                     </div>
                   </div>
                 </div>
@@ -94,8 +148,18 @@ export default function FlightDetails() {
                 <div className="grid gap-1">
                   <div className="text-sm text-muted-foreground">Status</div>
                   <div className="flex items-center gap-2">
-                    <div className="px-2 py-1 bg-green-500 text-green-50 rounded-md text-xs font-medium">
-                      On Time
+                    <div
+                      className={`px-2 py-1 ${
+                        flightData.status === "On Time"
+                          ? "bg-green-500"
+                          : flightData.status === "Delayed"
+                          ? "bg-yellow-400"
+                          : flightData.status === "Boarding"
+                          ? "bg-blue-100"
+                          : "bg-red-600"
+                      } text-green-50 rounded-md text-xs font-medium`}
+                    >
+                      {flightData.status}
                     </div>
                   </div>
                 </div>
@@ -105,7 +169,7 @@ export default function FlightDetails() {
                       Gate Changes
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="px-2 py-1 bg-yellow-500 text-yellow-50 rounded-md text-xs font-medium">
+                      <div className="px-2 py-1 bg-yellow-400 text-yellow-50 rounded-md text-xs font-medium">
                         Gate changed to A14
                       </div>
                     </div>
@@ -132,7 +196,7 @@ export default function FlightDetails() {
                 <div>
                   <div className="text-xl font-medium">Gate Information</div>
                   <div className="text-muted-foreground">
-                    Departure: Gate A12 | Arrival: Gate B5
+                    Departure: Gate {flightData.departure_gate} | Arrival: Gate {flightData.arrival_gate}
                   </div>
                 </div>
               </div>

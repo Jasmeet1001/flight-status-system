@@ -22,7 +22,7 @@ export default function Header({ flightSearch, onSearchChange }: HeaderProps) {
           <div className="flex items-center gap-2">
             <PlaneIcon />
             <span className="hidden sm:block text-base lg:text-2xl font-semibold">
-              <Link to="/">XYZ Airlines</Link>
+              <Link to="/">Indigo Airlines</Link>
             </span>
           </div>
           <div className="flex-1 max-w-md">

@@ -1,15 +1,11 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 
-def get_flights(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Flight).offset(skip).limit(limit).all()
-
-def create_flight(db: Session, flight: schemas.FlightCreate):
-    db_flight = models.Flight(**flight.dict())
-    db.add(db_flight)
-    db.commit()
-    db.refresh(db_flight)
-    return db_flight
+def get_flights(db: Session, flight_id: str = "", skip: int = 0, limit: int = 100):
+    if flight_id.strip() == "":
+        return db.query(models.Flight).offset(skip).limit(limit).all()
+    else:
+        return db.query(models.Flight).filter(models.Flight.flight_id == flight_id).offset(skip).limit(limit).all()
 
 def get_notifications(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Notification).offset(skip).limit(limit).all()

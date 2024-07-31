@@ -11,6 +11,8 @@ class Flight(Base):
     status = Column(String, nullable=False)
     departure_gate = Column(String)
     arrival_gate = Column(String)
+    departure_location = Column(String)
+    arrival_location = Column(String)
     scheduled_departure = Column(DateTime, nullable=False)
     scheduled_arrival = Column(DateTime, nullable=False)
     actual_departure = Column(DateTime)

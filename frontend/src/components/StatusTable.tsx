@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, SetStateAction } from "react";
 import {
   Table,
   TableHeader,
@@ -15,70 +15,44 @@ import { Link } from "react-router-dom";
 import { Flight, SearchField } from "@/types";
 import { BellIcon } from "./ui/customIcons/icons";
 import { Separator } from "./ui/separator";
+import axios from "axios";
+import { handleTime } from "@/utils/helper";
 
 export default function StatusTable({ flightSearch }: SearchField) {
   const [sortColumn, setSortColumn] = useState("flightNumber");
   const [sortDirection, setSortDirection] = useState("asc");
-  const [flights, setFlights] = useState([
-    {
-      flightNumber: "AA123",
-      departureAirport: "JFK",
-      arrivalAirport: "LAX",
-      departureTime: "10:30 AM",
-      arrivalTime: "1:45 PM",
-      gate: "B12",
-      status: "On Time",
-    },
-    {
-      flightNumber: "UA456",
-      departureAirport: "ORD",
-      arrivalAirport: "SFO",
-      departureTime: "8:00 AM",
-      arrivalTime: "10:15 AM",
-      gate: "C5",
-      status: "Delayed",
-    },
-    {
-      flightNumber: "DL789",
-      departureAirport: "ATL",
-      arrivalAirport: "MIA",
-      departureTime: "12:00 PM",
-      arrivalTime: "2:30 PM",
-      gate: "A7",
-      status: "Boarding",
-    },
-    {
-      flightNumber: "SW101",
-      departureAirport: "MDW",
-      arrivalAirport: "HOU",
-      departureTime: "3:45 PM",
-      arrivalTime: "5:55 PM",
-      gate: "D2",
-      status: "Cancelled",
-    },
-  ]);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message:
-        "Attention passengers: Due to inclement weather, all flights are experiencing delays. Please check with your airline for updated departure times.",
-      timestamp: "2023-07-30 11:30 AM",
-    },
-    {
-      id: 2,
-      message:
-        "Flight AA123 from JFK to LAX has been delayed by 30 minutes due to a mechanical issue. We apologize for the inconvenience.",
-      timestamp: "2023-07-30 10:15 AM",
-    },
-    {
-      id: 3,
-      message:
-        "Attention all passengers: The security checkpoint at Terminal B is currently experiencing longer than normal wait times. Please arrive at the airport at least 2 hours before your scheduled departure.",
-      timestamp: "2023-07-30 9:00 AM",
-    },
-  ]);
+  const [flights, setFlights] = useState([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const handleSort = (column: string) => {
+  useEffect(() => {
+    // Function to fetch flights data from the backend
+    const fetchFlights = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/flights/");
+        setFlights(response.data);
+      } catch (error) {
+        console.error("Error fetching flights data:", error);
+      }
+    };
+
+    // Function to fetch notifications data from the backend
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/notifications/"
+        );
+        setNotifications(response.data as Notification[]);
+      } catch (error) {
+        console.error("Error fetching notifications data:", error);
+      }
+    };
+
+    // Call the fetch functions
+    fetchFlights();
+    fetchNotifications();
+  }, []);
+
+  const handleSort = (column: SetStateAction<string>) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -89,27 +63,27 @@ export default function StatusTable({ flightSearch }: SearchField) {
 
   const sortedFlights = useMemo(() => {
     return flights.sort((a, b) => {
-      if (a[sortColumn as keyof Flight] < b[sortColumn as keyof Flight])
+      if (a[sortColumn] < b[sortColumn])
         return sortDirection === "asc" ? -1 : 1;
-      if (a[sortColumn as keyof Flight] > b[sortColumn as keyof Flight])
+      if (a[sortColumn] > b[sortColumn])
         return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
   }, [flights, sortColumn, sortDirection]);
 
-  const filteredFlights = useMemo(() => {
+  const filteredFlights: Flight[] = useMemo(() => {
     if (flightSearch.trim() === "") {
       return sortedFlights;
     }
-    return sortedFlights.filter((flight) => {
+    return sortedFlights.filter((flight: Flight) => {
       return (
-        flight.flightNumber
+        flight.flight_id.toLowerCase().includes(flightSearch.toLowerCase()) ||
+        flight.scheduled_departure
           .toLowerCase()
           .includes(flightSearch.toLowerCase()) ||
-        flight.departureAirport
+        flight.scheduled_arrival
           .toLowerCase()
-          .includes(flightSearch.toLowerCase()) ||
-        flight.arrivalAirport.toLowerCase().includes(flightSearch.toLowerCase())
+          .includes(flightSearch.toLowerCase())
       );
     });
   }, [sortedFlights, flightSearch]);
@@ -176,10 +150,21 @@ export default function StatusTable({ flightSearch }: SearchField) {
               </TableHead>
               <TableHead
                 className="cursor-pointer"
-                onClick={() => handleSort("gate")}
+                onClick={() => handleSort("arrivalGate")}
               >
-                Gate
-                {sortColumn === "gate" && (
+                Arrival Gate
+                {sortColumn === "arrivalGate" && (
+                  <span className="ml-2">
+                    {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("departureGate")}
+              >
+                Departure Gate
+                {sortColumn === "departureGate" && (
                   <span className="ml-2">
                     {sortDirection === "asc" ? "\u25B2" : "\u25BC"}
                   </span>
@@ -202,15 +187,16 @@ export default function StatusTable({ flightSearch }: SearchField) {
             {filteredFlights.map((flight, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <Link to={`/flight/${flight.flightNumber}`}>
-                    {flight.flightNumber}
+                  <Link to={`/flight/${flight.flight_id}`}>
+                    {flight.flight_id}
                   </Link>
                 </TableCell>
-                <TableCell>{flight.departureAirport}</TableCell>
-                <TableCell>{flight.arrivalAirport}</TableCell>
-                <TableCell>{flight.departureTime}</TableCell>
-                <TableCell>{flight.arrivalTime}</TableCell>
-                <TableCell>{flight.gate}</TableCell>
+                <TableCell>{flight.arrival_location}</TableCell>
+                <TableCell>{flight.departure_location}</TableCell>
+                <TableCell>{handleTime(flight.scheduled_departure)}</TableCell>
+                <TableCell>{handleTime(flight.scheduled_arrival)}</TableCell>
+                <TableCell>{flight.arrival_gate}</TableCell>
+                <TableCell>{flight.departure_gate}</TableCell>
                 <TableCell>
                   <div
                     className={`px-2 py-1 rounded-md text-sm font-medium ${
@@ -229,9 +215,7 @@ export default function StatusTable({ flightSearch }: SearchField) {
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter>
-            Pagination Here
-          </TableFooter>
+          <TableFooter>Pagination Here</TableFooter>
         </Table>
       </div>
       <Separator />
@@ -243,8 +227,8 @@ export default function StatusTable({ flightSearch }: SearchField) {
         </div>
         <Separator />
         <div className="space-y-5 overflow-y-auto p-4">
-          {notifications.map((notification) => (
-            <div key={notification.id} className="flex items-start gap-4">
+          {notifications.map((notification, index) => (
+            <div key={index} className="flex items-start gap-4">
               <div className="bg-yellow-400 rounded-full w-8 h-8 flex items-center justify-center text-primary-foreground">
                 <BellIcon />
               </div>

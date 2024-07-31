@@ -6,6 +6,8 @@ class FlightBase(BaseModel):
     flight_id: str
     airline: str
     status: str
+    departure_location: str
+    arrival_location: str
     departure_gate: Optional[str]
     arrival_gate: Optional[str]
     scheduled_departure: datetime
