@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.sql import functions
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -17,6 +18,7 @@ class Flight(Base):
     scheduled_arrival = Column(DateTime, nullable=False)
     actual_departure = Column(DateTime)
     actual_arrival = Column(DateTime)
+    updated_at = Column(DateTime(timezone=True), server_default=functions.now(), onupdate=functions.now())
 
     notifications = relationship("Notification", back_populates="flight")
 

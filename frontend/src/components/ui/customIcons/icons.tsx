@@ -8,6 +8,13 @@ import { Clock } from "lucide-react";
 import { Check } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import { RefreshCw } from "lucide-react";
+import { Search } from "lucide-react";
+
+const SearchIcon = () => {
+  return (
+    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary-foreground/80" />
+  );
+};
 
 const RefreshCwIcon = () => {
   return <RefreshCw />;
@@ -60,4 +67,5 @@ export {
   CheckIcon,
   ArrowRightIcon,
   RefreshCwIcon,
+  SearchIcon,
 };

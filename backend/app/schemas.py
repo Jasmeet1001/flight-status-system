@@ -14,6 +14,7 @@ class FlightBase(BaseModel):
     scheduled_arrival: datetime
     actual_departure: Optional[datetime]
     actual_arrival: Optional[datetime]
+    updated_at: datetime
 
 class FlightCreate(FlightBase):
     pass
